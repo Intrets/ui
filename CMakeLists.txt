@@ -1,3 +1,5 @@
+include("${PROJECT_SOURCE_DIR}/cmake/MakeModule.cmake")
+
 set(MODULE_NAME ui)
 
 set(MODULE_FILES
@@ -5,25 +7,21 @@ set(MODULE_FILES
 	Base
 	ControlState
 	Enums
+	State
+	Constructer
+	Proxy
+	TextDisplay
+	impl/Text
+	SizeType
 )
 
-foreach(FILE ${MODULE_FILES})
-	list(APPEND SOURCES_LIST "src/${FILE}.cpp")
-	list(APPEND HEADERS_LIST "${CMAKE_CURRENT_SOURCE_DIR}/include/${MODULE_NAME}/${FILE}.h")
-endforeach()
+make_module(${MODULE_NAME} "${MODULE_FILES}")
 
-add_library(${MODULE_NAME} ${SOURCES_LIST} ${HEADERS_LIST})
-add_library("${MODULE_NAME}::${MODULE_NAME}" ALIAS ${MODULE_NAME})
-
-target_include_directories(${MODULE_NAME} PRIVATE "./include/${MODULE_NAME}")
-target_include_directories(${MODULE_NAME} PUBLIC ./include)
-
-target_link_libraries(${MODULE_NAME} PRIVATE mem::mem GLM misc::misc GLEW GLFW3)
-
-target_compile_features(${MODULE_NAME} PUBLIC cxx_std_11)
-
-source_group(
-	TREE "${CMAKE_CURRENT_SOURCE_DIR}/include/${MODULE_NAME}"
-	PREFIX "Header Files"
-	FILES ${HEADERS_LIST}
+target_link_libraries(${MODULE_NAME} PRIVATE
+	GLM
+	GLEW
+	GLFW3
+	mem::mem
+	misc::misc
+	game::game
 )
