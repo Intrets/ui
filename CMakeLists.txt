@@ -33,7 +33,7 @@ make_module(
 		Grid
 		FreeSize
 		InitialSize
-		CXX_STANDARD 20
+	CXX_STANDARD 20
 	REQUIRED_LIBS
 		WGLM
 		GLEW
