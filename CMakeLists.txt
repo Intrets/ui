@@ -6,33 +6,6 @@ set(MODULE_NAME ui)
 
 project(${MODULE_NAME})
 
-set(MODULE_FILES
-	Base
-	ControlState
-	Enums
-	State
-	Constructer
-	Proxy
-	TextDisplay
-	impl/Text
-	binds/Binds
-	SizeType
-	ConstrainSize
-	Button
-	Pad
-	Window
-	Invisible
-	List
-	Empty
-	ColoredBackground
-	AnchoredProxy
-	Destructible
-	Hideable
-	Grid
-	FreeSize
-	InitialSize
-)
-
 make_module(
 	MODULE_NAME ${MODULE_NAME}
 	MODULE_FILES
