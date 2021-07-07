@@ -188,15 +188,15 @@ namespace ui
 		this->cursorWorld = cam + glm::vec2(x, y) * viewport;
 	}
 
-	void State::appendRenderInfo(game::GameState& gameState, render::RenderInfo& renderInfo) {
+	void State::appendRenderInfo(int32_t ticks, render::RenderInfo& renderInfo) {
 		int32_t depth = 10;
 		for (auto& UI : this->UIs) {
-			depth = UI.get()->addRenderInfo(gameState, renderInfo, depth);
+			depth = UI.get()->addRenderInfo(ticks, renderInfo, depth);
 		}
 	}
 
 	void State::addUI(UniqueReference<Base, Base> ref) {
-		ref.get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+		ref.get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](PlayerInfo& playerInfo) -> CallBackBindResult
 			{
 				return BIND::RESULT::CONSUME;
 			});
@@ -226,7 +226,7 @@ namespace ui
 		}
 
 		this->namedUIsBuffer[name] = f();
-		this->namedUIsBuffer[name].get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+		this->namedUIsBuffer[name].get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](PlayerInfo& playerInfo) -> CallBackBindResult
 			{
 				return BIND::RESULT::CONSUME;
 			});
@@ -236,7 +236,7 @@ namespace ui
 	void State::addNamedUIReplace(std::string const& name, UniqueReference<Base, Base> ref) {
 		this->closeNamedUI(name);
 
-		ref.get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+		ref.get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](PlayerInfo& playerInfo) -> CallBackBindResult
 			{
 				return BIND::RESULT::CONSUME;
 			});
@@ -346,7 +346,7 @@ namespace ui
 
 			someBinds.get()->addGlobalBind(
 				{ CONTROL::KEY::TOGGLE_DEBUG_RENDER },
-				[](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+				[](PlayerInfo& playerInfo) -> CallBackBindResult
 				{
 					misc::Option<misc::OPTION::GR_DEBUG, bool>::toggle();
 					return BIND::RESULT::CONTINUE;
@@ -359,38 +359,38 @@ namespace ui
 		{
 			UniqueReference<Base, Invisible> movement = Global::getManager().makeUniqueRef<Invisible>();
 
-			movement.get()->addGlobalBind({ CONTROL::KEY::LEFT, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+			movement.get()->addGlobalBind({ CONTROL::KEY::LEFT, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
 				{
 					playerInfo.pos.x -= 0.2f;
 					return BIND::RESULT::CONTINUE;
 				});
 
-			movement.get()->addGlobalBind({ CONTROL::KEY::RIGHT, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+			movement.get()->addGlobalBind({ CONTROL::KEY::RIGHT, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
 				{
 					playerInfo.pos.x += 0.2f;
 					return BIND::RESULT::CONTINUE;
 				});
 
-			movement.get()->addGlobalBind({ CONTROL::KEY::DOWN, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+			movement.get()->addGlobalBind({ CONTROL::KEY::DOWN, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
 				{
 					playerInfo.pos.y -= 0.2f;
 					return BIND::RESULT::CONTINUE;
 				});
 
-			movement.get()->addGlobalBind({ CONTROL::KEY::UP, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+			movement.get()->addGlobalBind({ CONTROL::KEY::UP, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
 				{
 					playerInfo.pos.y += 0.2f;
 					return BIND::RESULT::CONTINUE;
 				});
 
-			movement.get()->addGlobalBind({ CONTROL::KEY::SCROLL_UP }, [&](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+			movement.get()->addGlobalBind({ CONTROL::KEY::SCROLL_UP }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
 				{
 					using viewport = misc::Option<misc::OPTION::CL_VIEWPORTSCALE, float>;
 					viewport::setVal(viewport::getVal() / 1.1f);
 					return BIND::RESULT::CONTINUE;
 				});
 
-			movement.get()->addGlobalBind({ CONTROL::KEY::SCROLL_DOWN }, [&](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+			movement.get()->addGlobalBind({ CONTROL::KEY::SCROLL_DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
 				{
 					using viewport = misc::Option<misc::OPTION::CL_VIEWPORTSCALE, float>;
 					viewport::setVal(viewport::getVal() * 1.1f);

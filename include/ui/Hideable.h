@@ -35,6 +35,6 @@ namespace ui
 		virtual CallBackBindResult runActiveBinds(PlayerInfo& playerInfo) override;
 		virtual CallBackBindResult runGameWorldBinds(PlayerInfo& playerInfo) override;
 
-		virtual int32_t addRenderInfo(game::GameState& gameState, render::RenderInfo& renderInfo, int32_t depth) override;
+		virtual int32_t addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) override;
 	};
 }

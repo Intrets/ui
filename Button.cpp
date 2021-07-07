@@ -43,51 +43,50 @@ namespace ui
 	}
 
 	Button::Button() {
-		this->onPress = [](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+		this->onPress = [](PlayerInfo& playerInfo) -> CallBackBindResult
 		{
 			return BIND::RESULT::CONTINUE;
 		};
 
-		this->onRelease = [](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+		this->onRelease = [](PlayerInfo& playerInfo) -> CallBackBindResult
 		{
 			return BIND::RESULT::CONTINUE;
 		};
 
 		this->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL, CONTROL::STATE::PRESSED },
-			[](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+			[this](PlayerInfo& playerInfo) -> CallBackBindResult
 			{
-				if (!static_cast<Button*>(self_)->isDown() && !self_->isActive()) {
+				if (this->isDown() && !this->isActive()) {
 					Global<sound::SoundPlayer>->playSound(sound::Sample::BUTTON_HOVER, 30);
 				}
-				self_->activate();
+				this->activate();
 				return BIND::RESULT::CONSUME;
 			});
 
-		this->addGlobalBind({ CONTROL::KEY::MOUSE_POS_CHANGED, CONTROL::STATE::PRESSED }, [](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+		this->addGlobalBind({ CONTROL::KEY::MOUSE_POS_CHANGED, CONTROL::STATE::PRESSED }, [this](PlayerInfo& playerInfo) -> CallBackBindResult
 			{
-				if (!self_->getScreenRectangle().contains(playerInfo.uiState.getCursor()) ||
+				if (!this->getScreenRectangle().contains(playerInfo.uiState.getCursor()) ||
 					!playerInfo.controlState.activated({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL })) {
-					self_->deactivate();
+					this->deactivate();
 				}
 				return BIND::RESULT::CONTINUE;
 			});
 
-		this->addOnHoverBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::PRESSED }, [](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+		this->addOnHoverBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::PRESSED }, [this](PlayerInfo& playerInfo) -> CallBackBindResult
 			{
-				auto self = static_cast<Button*>(self_);
-				self->down = true;
-				self->mousePressOffset = playerInfo.uiState.getCursor() - self->getScreenRectangle().getTopLeft();
+				this->down = true;
+				this->mousePressOffset = playerInfo.uiState.getCursor() - this->getScreenRectangle().getTopLeft();
 				Global<sound::SoundPlayer>->playSound(sound::Sample::BUTTON_CLICK, 80);
-				return self->onPress(playerInfo, self_) | BIND::RESULT::FOCUS | BIND::RESULT::CONSUME;
+				return this->onPress(playerInfo) | BIND::RESULT::FOCUS | BIND::RESULT::CONSUME;
 			});
 
-		this->addGlobalBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::RELEASED }, [this](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+		this->addGlobalBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::RELEASED }, [this](PlayerInfo& playerInfo) -> CallBackBindResult
 			{
 				if (this->down) {
 					this->down = false;
 
-					if (self_->getScreenRectangle().contains(playerInfo.uiState.getCursor())) {
-						return this->onRelease(playerInfo, self_) | BIND::RESULT::CONTINUE;
+					if (this->getScreenRectangle().contains(playerInfo.uiState.getCursor())) {
+						return this->onRelease(playerInfo) | BIND::RESULT::CONTINUE;
 					}
 					else {
 						return BIND::RESULT::CONTINUE;
@@ -108,7 +107,7 @@ namespace ui
 		return this->screenRectangle;
 	}
 
-	int32_t Button::addRenderInfo(game::GameState& gameState, render::RenderInfo& renderInfo, int32_t depth) {
+	int32_t Button::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
 		glm::vec4 c = this->color;
 		if (down) {
 			c = COLORS::DARKEN(c);
@@ -117,7 +116,7 @@ namespace ui
 			c = COLORS::LIGHTEN(c);
 		}
 
-		depth = this->main.get()->addRenderInfo(gameState, renderInfo, depth + 1);
+		depth = this->main.get()->addRenderInfo(ticks, renderInfo, depth + 1);
 		renderInfo.uiRenderInfo.addPixelRectangle(
 			this->screenRectangle.getPixelSize(),
 			this->screenRectangle.getBottomLeft(),

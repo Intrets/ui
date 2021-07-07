@@ -5,9 +5,9 @@
 namespace ui
 {
 	Destructible::Destructible() {
-		this->addGlobalBind({ CONTROL::KEY::EVERY_TICK }, [](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+		this->addGlobalBind({ CONTROL::KEY::EVERY_TICK }, [this](PlayerInfo& playerInfo) -> CallBackBindResult
 		{
-			if (static_cast<Destructible*>(self_)->destruct) {
+			if (this->destruct) {
 				return BIND::RESULT::CLOSE;
 			}
 			else {

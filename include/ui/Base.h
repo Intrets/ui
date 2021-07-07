@@ -21,7 +21,7 @@ namespace render
 
 namespace game
 {
-	class GameState;
+	struct GameState;
 }
 
 struct PlayerInfo;
@@ -43,11 +43,9 @@ namespace ui
 		};
 	}
 
-	typedef int32_t CallBackBindResult;
-
-	typedef PlayerInfo PlayerInfo;
-
-	typedef std::function<CallBackBindResult(PlayerInfo& playerInfo, Base* self)> CallBack;
+	using CallBackBindResult = int32_t;
+	using PlayerInfo = PlayerInfo;
+	using CallBack = std::function<CallBackBindResult(PlayerInfo& playerInfo)>;
 
 	class State;
 
@@ -101,7 +99,7 @@ namespace ui
 
 		virtual ScreenRectangle updateSize(ScreenRectangle newScreenRectangle) = 0;
 
-		virtual int32_t addRenderInfo(game::GameState& gameState, render::RenderInfo& renderInfo, int32_t depth) = 0;
+		virtual int32_t addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) = 0;
 
 		ScreenRectangle const& getScreenRectangle() const;
 
@@ -131,7 +129,7 @@ namespace ui
 		virtual CallBackBindResult runActiveBinds(PlayerInfo& playerInfo) override;
 		virtual CallBackBindResult runGameWorldBinds(PlayerInfo& playerInfo) override;
 
-		virtual int32_t addRenderInfo(game::GameState& gameState, render::RenderInfo& renderInfo, int32_t depth) override;
+		virtual int32_t addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) override;
 
 		BaseMulti() = default;
 		virtual ~BaseMulti() = default;
@@ -156,7 +154,7 @@ namespace ui
 		virtual CallBackBindResult runActiveBinds(PlayerInfo& playerInfo) override;
 		virtual CallBackBindResult runGameWorldBinds(PlayerInfo& playerInfo) override;
 
-		virtual int32_t addRenderInfo(game::GameState& gameState, render::RenderInfo& renderInfo, int32_t depth) override;
+		virtual int32_t addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) override;
 
 		BaseSingle() = default;
 		virtual ~BaseSingle() = default;

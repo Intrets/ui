@@ -37,8 +37,8 @@ namespace ui
 		return newScreenRectangle;
 	}
 
-	int32_t Grid::addRenderInfo(game::GameState& gameState, render::RenderInfo& renderInfo, int32_t depth) {
-		return this->BaseMulti::addRenderInfo(gameState, renderInfo, depth);
+	int32_t Grid::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
+		return this->BaseMulti::addRenderInfo(ticks, renderInfo, depth);
 	}
 
 	TYPE Grid::getUIOType() {

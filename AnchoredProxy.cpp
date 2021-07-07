@@ -28,9 +28,9 @@ namespace ui
 		this->proxyBase.set(this->destructible);
 
 		auto ptr = makeEnd(std::move(ref));
-		ptr.get()->addGlobalBind({ CONTROL::KEY::ACTION0 }, [](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+		ptr.get()->addGlobalBind({ CONTROL::KEY::ACTION0 }, [this](PlayerInfo& playerInfo) -> CallBackBindResult
 		{
-			if (!self_->getScreenRectangle().contains(playerInfo.uiState.getCursor())) {
+			if (!this->getScreenRectangle().contains(playerInfo.uiState.getCursor())) {
 				return BIND::RESULT::CLOSE;
 			}
 			else {
@@ -38,7 +38,7 @@ namespace ui
 			}
 		});
 
-		ptr.get()->addOnHoverBind({ CONTROL::KEY::ACTION0 }, [](PlayerInfo& playerInfo, Base* self_) -> CallBackBindResult
+		ptr.get()->addOnHoverBind({ CONTROL::KEY::ACTION0 }, [](PlayerInfo& playerInfo) -> CallBackBindResult
 		{
 			return BIND::RESULT::CONSUME;
 		});
@@ -83,7 +83,7 @@ namespace ui
 		return this->screenRectangle;
 	}
 
-	int32_t AnchoredProxy::addRenderInfo(game::GameState& gameState, render::RenderInfo& renderInfo, int32_t depth) {
+	int32_t AnchoredProxy::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
 		return depth;
 	}
 

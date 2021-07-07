@@ -123,7 +123,7 @@ namespace ui
 
 		for (auto& [control, bind] : this->globalBinds) {
 			if (playerInfo.controlState.activated(control)) {
-				CallBackBindResult bindResult = bind(playerInfo, this);
+				CallBackBindResult bindResult = bind(playerInfo);
 				sumResult |= bindResult;
 				if (bindResult & BIND::RESULT::CONSUME) {
 					playerInfo.controlState.consumeBufferControl(control.control);
@@ -142,7 +142,7 @@ namespace ui
 
 		for (auto& [control, bind] : this->focussedBinds) {
 			if (playerInfo.controlState.activated(control)) {
-				CallBackBindResult bindResult = bind(playerInfo, this);
+				CallBackBindResult bindResult = bind(playerInfo);
 				if (bindResult & BIND::RESULT::CONSUME) {
 					playerInfo.controlState.consumeBufferControl(control.control);
 				}
@@ -161,7 +161,7 @@ namespace ui
 
 		for (auto& [control, bind] : onHoverBinds) {
 			if (playerInfo.controlState.activated(control)) {
-				CallBackBindResult bindResult = bind(playerInfo, this);
+				CallBackBindResult bindResult = bind(playerInfo);
 				sumResult |= bindResult;
 				if (bindResult & BIND::RESULT::CONSUME) {
 					playerInfo.controlState.consumeBufferControl(control.control);
@@ -181,7 +181,7 @@ namespace ui
 		if (this->active) {
 			for (auto& [control, bind] : activeBinds) {
 				if (playerInfo.controlState.activated(control)) {
-					CallBackBindResult bindResult = bind(playerInfo, this);
+					CallBackBindResult bindResult = bind(playerInfo);
 					sumResult |= bindResult;
 					if (bindResult & BIND::RESULT::CONSUME) {
 						playerInfo.controlState.consumeBufferControl(control.control);
@@ -201,7 +201,7 @@ namespace ui
 
 		for (auto& [control, bind] : this->gameWorldBinds) {
 			if (playerInfo.controlState.activated(control)) {
-				CallBackBindResult bindResult = bind(playerInfo, this);
+				CallBackBindResult bindResult = bind(playerInfo);
 				sumResult |= bindResult;
 				if (bindResult & BIND::RESULT::CONSUME) {
 					playerInfo.controlState.consumeBufferControl(control.control);
@@ -288,10 +288,10 @@ namespace ui
 		return sumResult | this->Base::runGameWorldBinds(playerInfo);
 	}
 
-	int32_t BaseMulti::addRenderInfo(game::GameState& gameState, render::RenderInfo& renderInfo, int32_t depth) {
+	int32_t BaseMulti::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
 		int32_t maxDepth = 0;
 		for (auto& element : this->elements) {
-			maxDepth = glm::max(maxDepth, element.get()->addRenderInfo(gameState, renderInfo, depth));
+			maxDepth = glm::max(maxDepth, element.get()->addRenderInfo(ticks, renderInfo, depth));
 		}
 		return 1 + maxDepth;
 	}
@@ -369,9 +369,9 @@ namespace ui
 		return sumResult | this->Base::runGameWorldBinds(playerInfo);
 	}
 
-	int32_t BaseSingle::addRenderInfo(game::GameState& gameState, render::RenderInfo& renderInfo, int32_t depth) {
+	int32_t BaseSingle::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
 		assert(main.isNotNull());
-		return this->main.get()->addRenderInfo(gameState, renderInfo, depth);
+		return this->main.get()->addRenderInfo(ticks, renderInfo, depth);
 	}
 
 	void BaseEnd::addElement(UniqueReference<Base, Base> element) {

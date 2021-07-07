@@ -5,10 +5,10 @@
 
 namespace ui
 {
-	int32_t Window::addRenderInfo(game::GameState& gameState, render::RenderInfo& renderInfo, int32_t depth) {
+	int32_t Window::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
 		int32_t border = 1;
 		if (this->minimized) {
-			depth = this->topBar.get()->addRenderInfo(gameState, renderInfo, depth++);
+			depth = this->topBar.get()->addRenderInfo(ticks, renderInfo, depth++);
 			renderInfo.uiRenderInfo.addPixelRectangle(
 				this->topBar.get()->getScreenRectangle().getPixelSize(),
 				this->topBar.get()->getScreenRectangle().getBottomLeft() - border,
@@ -19,7 +19,7 @@ namespace ui
 			return depth;
 		}
 		else {
-			depth = this->BaseMulti::addRenderInfo(gameState, renderInfo, depth++);
+			depth = this->BaseMulti::addRenderInfo(ticks, renderInfo, depth++);
 			renderInfo.uiRenderInfo.addPixelRectangle(
 				this->screenRectangle.getPixelSize(),
 				this->screenRectangle.getBottomLeft() - border,
