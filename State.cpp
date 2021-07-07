@@ -1,5 +1,7 @@
 #include "State.h"
 
+#include <game/player/PlayerInfo.h>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 

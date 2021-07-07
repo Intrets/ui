@@ -6,7 +6,6 @@
 
 #include <wglm/glm.hpp>
 
-#include <game/player/PlayerInfo.h>
 #include <mem/ReferenceManager.h>
 #include <misc/Misc.h>
 

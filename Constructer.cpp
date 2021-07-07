@@ -1,6 +1,7 @@
 #include "Constructer.h"
 
 #include <game/player/PlayerInfo.h>
+
 #include <misc/StringHelpers.h>
 
 #include "State.h"
