@@ -1,7 +1,5 @@
 #include "Grid.h"
 
-#include <render/infos/RenderInfo.h>
-
 namespace ui
 {
 	Grid::Grid(glm::ivec2 size_) : size(size_) {
@@ -37,7 +35,7 @@ namespace ui
 		return newScreenRectangle;
 	}
 
-	int32_t Grid::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
+	int32_t Grid::addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) {
 		return this->BaseMulti::addRenderInfo(ticks, renderInfo, depth);
 	}
 

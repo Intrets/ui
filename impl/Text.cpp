@@ -1,11 +1,14 @@
 #include "impl/Text.h"
 
-#include <render/infos/RenderInfo.h>
 #include <render/Enums.h>
 #include <render/Colors.h>
 #include <render/Fonts.h>
+#include <render/infos/proxy/UIInfos.h>
+#include <render/infos/UIRenderInfo.h>
+
 #include <misc/Misc.h>
 #include <misc/FunctionHelpers.h>
+
 #include <mem/Global.h>
 
 namespace ui
@@ -120,7 +123,7 @@ namespace ui
 
 		int32_t Text::addRenderInfo(
 			ScreenRectangle screenRectangle,
-			render::RenderInfo& renderInfo,
+			render::UIInfos& renderInfo,
 			render::FONT font,
 			int32_t depth,
 			bool wrap,

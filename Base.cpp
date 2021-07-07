@@ -288,7 +288,7 @@ namespace ui
 		return sumResult | this->Base::runGameWorldBinds(playerInfo);
 	}
 
-	int32_t BaseMulti::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
+	int32_t BaseMulti::addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) {
 		int32_t maxDepth = 0;
 		for (auto& element : this->elements) {
 			maxDepth = glm::max(maxDepth, element.get()->addRenderInfo(ticks, renderInfo, depth));
@@ -369,7 +369,7 @@ namespace ui
 		return sumResult | this->Base::runGameWorldBinds(playerInfo);
 	}
 
-	int32_t BaseSingle::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
+	int32_t BaseSingle::addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) {
 		assert(main.isNotNull());
 		return this->main.get()->addRenderInfo(ticks, renderInfo, depth);
 	}

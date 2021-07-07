@@ -83,7 +83,7 @@ namespace ui
 		return this->screenRectangle;
 	}
 
-	int32_t AnchoredProxy::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
+	int32_t AnchoredProxy::addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) {
 		return depth;
 	}
 

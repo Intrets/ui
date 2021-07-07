@@ -2,11 +2,12 @@
 
 #include <game/player/PlayerInfo.h>
 
-#include <render/infos/RenderInfo.h>
-
 #include <mem/Global.h>
 
 #include <sound/SoundPlayer.h>
+
+#include <render/infos/proxy/UIInfos.h>
+#include <render/infos/UIRenderInfo.h>
 
 #include "State.h"
 
@@ -107,7 +108,7 @@ namespace ui
 		return this->screenRectangle;
 	}
 
-	int32_t Button::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
+	int32_t Button::addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) {
 		glm::vec4 c = this->color;
 		if (down) {
 			c = COLORS::DARKEN(c);

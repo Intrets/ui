@@ -21,7 +21,7 @@ namespace ui
 
 		virtual ScreenRectangle updateSize(ScreenRectangle newScreenRectangle) override;
 
-		virtual int32_t addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) override;
+		virtual int32_t addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) override;
 
 		virtual TYPE getUIOType() override;
 	};

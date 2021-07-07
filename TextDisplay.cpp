@@ -1,7 +1,10 @@
 #include "TextDisplay.h"
+
 #include <game/player/PlayerInfo.h>
-#include <render/infos/RenderInfo.h>
+
 #include <render/Colors.h>
+#include <render/infos/UIRenderInfo.h>
+#include <render/infos/proxy/UIInfos.h>
 
 namespace ui
 {
@@ -151,7 +154,7 @@ namespace ui
 		}
 	}
 
-	int32_t TextDisplay::addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) {
+	int32_t TextDisplay::addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) {
 		if (this->ticksSelected < 30) {
 			ticks = 0;
 		}

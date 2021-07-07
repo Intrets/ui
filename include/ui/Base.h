@@ -8,15 +8,18 @@
 #include <wglm/glm.hpp>
 
 #include <mem/ReferenceManager.h>
+
 #include <misc/Rectangle.h>
 
-#include "ControlState.h"
+#include <render/infos/UIRenderInfo.h>
+#include <render/infos/TextRenderInfo.h>
 
+#include "ControlState.h"
 #include "Enums.h"
 
 namespace render
 {
-	struct RenderInfo;
+	struct UIInfos;
 }
 
 namespace game
@@ -99,7 +102,7 @@ namespace ui
 
 		virtual ScreenRectangle updateSize(ScreenRectangle newScreenRectangle) = 0;
 
-		virtual int32_t addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) = 0;
+		virtual int32_t addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) = 0;
 
 		ScreenRectangle const& getScreenRectangle() const;
 
@@ -129,7 +132,7 @@ namespace ui
 		virtual CallBackBindResult runActiveBinds(PlayerInfo& playerInfo) override;
 		virtual CallBackBindResult runGameWorldBinds(PlayerInfo& playerInfo) override;
 
-		virtual int32_t addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) override;
+		virtual int32_t addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) override;
 
 		BaseMulti() = default;
 		virtual ~BaseMulti() = default;
@@ -154,7 +157,7 @@ namespace ui
 		virtual CallBackBindResult runActiveBinds(PlayerInfo& playerInfo) override;
 		virtual CallBackBindResult runGameWorldBinds(PlayerInfo& playerInfo) override;
 
-		virtual int32_t addRenderInfo(int32_t ticks, render::RenderInfo& renderInfo, int32_t depth) override;
+		virtual int32_t addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) override;
 
 		BaseSingle() = default;
 		virtual ~BaseSingle() = default;

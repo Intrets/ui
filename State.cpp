@@ -3,7 +3,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <render/infos/RenderInfo.h>
 #include <misc/Option.h>
 
 #include "Constructer.h"
@@ -188,7 +187,7 @@ namespace ui
 		this->cursorWorld = cam + glm::vec2(x, y) * viewport;
 	}
 
-	void State::appendRenderInfo(int32_t ticks, render::RenderInfo& renderInfo) {
+	void State::appendRenderInfo(int32_t ticks, render::UIInfos& renderInfo) {
 		int32_t depth = 10;
 		for (auto& UI : this->UIs) {
 			depth = UI.get()->addRenderInfo(ticks, renderInfo, depth);

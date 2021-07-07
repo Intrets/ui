@@ -14,7 +14,7 @@
 
 namespace render
 {
-	struct RenderInfo;
+	struct UIInfos;
 }
 
 namespace ui
@@ -53,7 +53,7 @@ namespace ui
 
 		bool updateSize(GLFWwindow* window);
 		void updateCursor(GLFWwindow* window, glm::vec2 cam);
-		void appendRenderInfo(int32_t ticks, render::RenderInfo& renderInfo);
+		void appendRenderInfo(int32_t ticks, render::UIInfos& renderInfo);
 
 		void addUI(UniqueReference<Base, Base> ref);
 

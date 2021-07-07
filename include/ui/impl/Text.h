@@ -16,7 +16,7 @@
 
 namespace render
 {
-	struct RenderInfo;
+	struct UIInfos;
 }
 
 namespace ui
@@ -55,7 +55,7 @@ namespace ui
 			void invalidateCache();
 			void makeRenderInfo(ScreenRectangle screenRectangle, render::FONT font, bool wrap, bool clickSupport);
 
-			int32_t addRenderInfo(ScreenRectangle screenRectangle, render::RenderInfo& renderInfo, render::FONT font, int32_t depth, bool wrap, int32_t tick, bool renderCursor, bool clickSupport, CURSOR::TYPE cursorType);
+			int32_t addRenderInfo(ScreenRectangle screenRectangle, render::UIInfos& renderInfo, render::FONT font, int32_t depth, bool wrap, int32_t tick, bool renderCursor, bool clickSupport, CURSOR::TYPE cursorType);
 
 			bool deleteChar();
 			bool backspaceChar();
