@@ -25,6 +25,7 @@ namespace ui
 
 		glm::vec2 cursorWorld;
 
+		glm::ivec2 cursorMovement;
 		glm::ivec2 cursor;
 		glm::ivec2 windowSize;
 
@@ -46,6 +47,7 @@ namespace ui
 		glm::vec2 getCursorPositionWorld();
 		glm::ivec2 getCursor() const;
 		glm::ivec2 getWindowSize() const;
+		glm::ivec2 getCursorMovement() const;
 
 		void runUIBinds(PlayerInfo& playerInfo);
 		void run(PlayerInfo& playerInfo);

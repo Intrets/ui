@@ -2,6 +2,8 @@
 
 #include <game/player/PlayerInfo.h>
 
+#include <wglm/gtx/euler_angles.hpp>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -53,6 +55,10 @@ namespace ui
 
 	glm::ivec2 State::getWindowSize() const {
 		return this->windowSize;
+	}
+
+	glm::ivec2 State::getCursorMovement() const {
+		return this->cursorMovement;
 	}
 
 	void State::runUIBinds(PlayerInfo& playerInfo) {
@@ -173,7 +179,10 @@ namespace ui
 		glfwGetFramebufferSize(window, &frameSizeX, &frameSizeY);
 
 		this->windowSize = glm::ivec2(frameSizeX, frameSizeY);
-		this->cursor = glm::ivec2(glm::floor(x), frameSizeY - glm::floor(y));
+		auto newCursor = glm::ivec2(glm::floor(x), frameSizeY - glm::floor(y));
+		this->cursorMovement = newCursor - this->cursor;
+		this->cursor = newCursor;
+
 
 		x = x / frameSizeX;
 		y = y / frameSizeY;
@@ -360,27 +369,47 @@ namespace ui
 		{
 			UniqueReference<Base, Invisible> movement = Global::getManager().makeUniqueRef<Invisible>();
 
+			movement.get()->addGlobalBind({ CONTROL::KEY::MOUSE_POS_CHANGED, CONTROL::STATE::PRESSED }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
+				{
+					auto d = glm::vec2(playerInfo.uiState.getCursorMovement()) / 500.0f;
+					playerInfo.look += glm::vec3(0.0f, d.y, -d.x);
+					playerInfo.look.y = glm::clamp(playerInfo.look.y, 0.0f, glm::pi<float>());
+					return BIND::RESULT::CONTINUE;
+				});
+
 			movement.get()->addGlobalBind({ CONTROL::KEY::LEFT, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
 				{
-					playerInfo.pos.x -= 0.2f;
+					glm::vec4 dir{ 1.0f, 0.0f, 0.0f, 1.0f };
+					auto M = glm::yawPitchRoll(-playerInfo.look.x, -playerInfo.look.y, -playerInfo.look.z);
+					dir = dir * M;
+					playerInfo.pos -= glm::vec3(dir) / 2.0f;
 					return BIND::RESULT::CONTINUE;
 				});
 
 			movement.get()->addGlobalBind({ CONTROL::KEY::RIGHT, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
 				{
-					playerInfo.pos.x += 0.2f;
+					glm::vec4 dir{ 1.0f, 0.0f, 0.0f, 1.0f };
+					auto M = glm::yawPitchRoll(-playerInfo.look.x, -playerInfo.look.y, -playerInfo.look.z);
+					dir = dir * M;
+					playerInfo.pos += glm::vec3(dir) / 2.0f;
 					return BIND::RESULT::CONTINUE;
 				});
 
 			movement.get()->addGlobalBind({ CONTROL::KEY::DOWN, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
 				{
-					playerInfo.pos.y -= 0.2f;
+					glm::vec4 dir{ 0.0f, 0.0f, 1.0f, 1.0f };
+					auto M = glm::yawPitchRoll(-playerInfo.look.x, -playerInfo.look.y, -playerInfo.look.z);
+					dir = dir * M;
+					playerInfo.pos += glm::vec3(dir) / 2.0f;
 					return BIND::RESULT::CONTINUE;
 				});
 
 			movement.get()->addGlobalBind({ CONTROL::KEY::UP, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
 				{
-					playerInfo.pos.y += 0.2f;
+					glm::vec4 dir{ 0.0f, 0.0f, 1.0f, 1.0f };
+					auto M = glm::yawPitchRoll(-playerInfo.look.x, -playerInfo.look.y, -playerInfo.look.z);
+					dir = dir * M;
+					playerInfo.pos -= glm::vec3(dir) / 2.0f;
 					return BIND::RESULT::CONTINUE;
 				});
 
