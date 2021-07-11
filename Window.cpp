@@ -32,21 +32,21 @@ namespace ui
 		}
 	}
 
-	CallBackBindResult Window::runGlobalBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Window::runGlobalBinds(UIInfo& uiInfo, UserData& userData) {
 		if (this->minimized) {
-			return this->topBar.get()->runGlobalBinds(playerInfo);
+			return this->topBar.get()->runGlobalBinds(uiInfo, userData);
 		}
 		else {
-			return this->BaseMulti::runGlobalBinds(playerInfo);
+			return this->BaseMulti::runGlobalBinds(uiInfo, userData);
 		}
 	}
 
-	CallBackBindResult Window::runGameWorldBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Window::runGameWorldBinds(UIInfo& uiInfo, UserData& userData) {
 		if (this->minimized) {
-			return this->topBar.get()->runGameWorldBinds(playerInfo);
+			return this->topBar.get()->runGameWorldBinds(uiInfo, userData);
 		}
 		else {
-			return this->BaseMulti::runGameWorldBinds(playerInfo);
+			return this->BaseMulti::runGameWorldBinds(uiInfo, userData);
 		}
 	}
 
@@ -60,30 +60,30 @@ namespace ui
 		this->BaseMulti::addElement(std::move(element));
 	}
 
-	CallBackBindResult Window::runFocussedBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Window::runFocussedBinds(UIInfo& uiInfo, UserData& userData) {
 		if (this->minimized) {
-			return this->topBar.get()->runFocussedBinds(playerInfo);
+			return this->topBar.get()->runFocussedBinds(uiInfo, userData);
 		}
 		else {
-			return this->BaseMulti::runFocussedBinds(playerInfo);
+			return this->BaseMulti::runFocussedBinds(uiInfo, userData);
 		}
 	}
 
-	CallBackBindResult Window::runOnHoverBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Window::runOnHoverBinds(UIInfo& uiInfo, UserData& userData) {
 		if (this->minimized) {
-			return this->topBar.get()->runOnHoverBinds(playerInfo);
+			return this->topBar.get()->runOnHoverBinds(uiInfo, userData);
 		}
 		else {
-			return  this->BaseMulti::runOnHoverBinds(playerInfo);
+			return  this->BaseMulti::runOnHoverBinds(uiInfo, userData);
 		}
 	}
 
-	CallBackBindResult Window::runActiveBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Window::runActiveBinds(UIInfo& uiInfo, UserData& userData) {
 		if (this->minimized) {
-			return this->topBar.get()->runActiveBinds(playerInfo);
+			return this->topBar.get()->runActiveBinds(uiInfo, userData);
 		}
 		else {
-			return this->BaseMulti::runActiveBinds(playerInfo);
+			return this->BaseMulti::runActiveBinds(uiInfo, userData);
 		}
 	}
 }

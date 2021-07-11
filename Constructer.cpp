@@ -1,7 +1,5 @@
 #include "Constructer.h"
 
-#include <game/player/PlayerInfo.h>
-
 #include <misc/StringHelpers.h>
 
 #include "State.h"
@@ -216,11 +214,11 @@ namespace ui
 			auto button = textButton(title);
 			button.get()->addFocussedBind(
 				{ CONTROL::KEY::MOUSE_POS_CHANGED, CONTROL::STATE::PRESSED },
-				[button = button.get(), windowPtr = windowPtr.get()](PlayerInfo& playerInfo)->CallBackBindResult
+				[button = button.get(), windowPtr = windowPtr.get()](UIInfo& uiInfo, UserData& userData)->CallBackBindResult
 			{
 				if (button->isDown()) {
 					// glm::ivec2(-1, 1) <- offset for border
-					auto newPos = playerInfo.uiState.getCursor() - button->getMousePressOffset() + glm::ivec2(-1, 1);
+					auto newPos = uiInfo.uiState.getCursor() - button->getMousePressOffset() + glm::ivec2(-1, 1);
 					windowPtr->screenRectangle.translate(newPos - windowPtr->screenRectangle.getTopLeft());
 				}
 				return BIND::RESULT::CONTINUE;
@@ -242,7 +240,7 @@ namespace ui
 
 			constrainSize({ SIZETYPE::FH, 1.2f });
 			auto button = textButton(" _");
-			button.get()->setOnRelease([windowPtr = windowPtr.get()](PlayerInfo& playerInfo)->CallBackBindResult
+			button.get()->setOnRelease([windowPtr = windowPtr.get()](UIInfo& uiInfo, UserData& userData)->CallBackBindResult
 			{
 				windowPtr->minimized = !windowPtr->minimized;
 				return BIND::RESULT::CONTINUE;
@@ -293,10 +291,10 @@ namespace ui
 
 			button.get()->addFocussedBind(
 				{ CONTROL::KEY::MOUSE_POS_CHANGED, CONTROL::STATE::PRESSED },
-				[button = button.get(), windowPtr = windowPtr.get()](PlayerInfo& playerInfo)->CallBackBindResult
+				[button = button.get(), windowPtr = windowPtr.get()](UIInfo& uiInfo, UserData& userData)->CallBackBindResult
 			{
 				if (button->isDown()) {
-					int32_t bottom = playerInfo.uiState.getCursor().y - button->getMousePressOffset().y - button->screenRectangle.size().y;
+					int32_t bottom = uiInfo.uiState.getCursor().y - button->getMousePressOffset().y - button->screenRectangle.size().y;
 
 					if (windowPtr->screenRectangle.getTop() - bottom < 30) {
 						bottom = windowPtr->screenRectangle.getTop() - 30;
@@ -323,10 +321,10 @@ namespace ui
 
 			button.get()->addFocussedBind(
 				{ CONTROL::KEY::MOUSE_POS_CHANGED, CONTROL::STATE::PRESSED },
-				[button = button.get(), windowPtr = windowPtr.get()](PlayerInfo& playerInfo)->CallBackBindResult
+				[button = button.get(), windowPtr = windowPtr.get()](UIInfo& uiInfo, UserData& userData)->CallBackBindResult
 			{
 				if (button->isDown()) {
-					int32_t right = playerInfo.uiState.getCursor().x - button->getMousePressOffset().x + button->screenRectangle.size().x;
+					int32_t right = uiInfo.uiState.getCursor().x - button->getMousePressOffset().x + button->screenRectangle.size().x;
 
 					if (right - windowPtr->screenRectangle.getLeft() < 30) {
 						right = windowPtr->screenRectangle.getLeft() + 30;
@@ -351,10 +349,10 @@ namespace ui
 
 			button.get()->addFocussedBind(
 				{ CONTROL::KEY::MOUSE_POS_CHANGED, CONTROL::STATE::PRESSED },
-				[button = button.get(), windowPtr = windowPtr.get()](PlayerInfo& playerInfo)->CallBackBindResult
+				[button = button.get(), windowPtr = windowPtr.get()](UIInfo& uiInfo, UserData& userData)->CallBackBindResult
 			{
 				if (button->isDown()) {
-					glm::ivec2 bottomRight = playerInfo.uiState.getCursor() - button->getMousePressOffset() + glm::ivec2(1, -1) * button->screenRectangle.size();
+					glm::ivec2 bottomRight = uiInfo.uiState.getCursor() - button->getMousePressOffset() + glm::ivec2(1, -1) * button->screenRectangle.size();
 
 					if (bottomRight.x - windowPtr->screenRectangle.getLeft() < 10) {
 						bottomRight.x = windowPtr->screenRectangle.getLeft() + 10;
@@ -526,7 +524,7 @@ namespace ui
 
 		endList();
 
-		button.get()->setOnPress([proxy = proxy.get(), f](PlayerInfo& playerInfo)->CallBackBindResult
+		button.get()->setOnPress([proxy = proxy.get(), f](UIInfo& uiInfo, UserData& userData)->CallBackBindResult
 		{
 			Global::push();
 
@@ -537,7 +535,7 @@ namespace ui
 
 			f();
 
-			proxy->setProxy(Global::pop(), playerInfo.uiState);
+			proxy->setProxy(Global::pop(), uiInfo.uiState);
 
 			return BIND::RESULT::CONTINUE;
 		});

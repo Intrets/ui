@@ -28,11 +28,11 @@ namespace ui
 
 		virtual int32_t addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) override;
 
-		virtual CallBackBindResult runOnHoverBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runFocussedBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runActiveBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runGlobalBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runGameWorldBinds(PlayerInfo& playerInfo) override;
+		virtual CallBackBindResult runOnHoverBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runFocussedBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runActiveBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runGlobalBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runGameWorldBinds(UIInfo& uiInfo, UserData& userData) override;
 
 		virtual void addElement(UniqueReference<Base, Base> element) override;
 		virtual void addElementMulti(UniqueReference<Base, Base> element);

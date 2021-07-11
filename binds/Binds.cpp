@@ -1,7 +1,5 @@
 #include "binds/Binds.h"
 
-#include <game/player/PlayerInfo.h>
-
 #include <misc/StringHelpers.h>
 
 #include <mem/Global.h>
@@ -21,16 +19,16 @@ namespace ui
 	namespace BASE
 	{
 		void activatable(Base* ptr) {
-			ptr->addGlobalBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::PRESSED }, [ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+			ptr->addGlobalBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::PRESSED }, [ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
-					if (!ptr->getScreenRectangle().contains(playerInfo.uiState.getCursor())) {
+					if (!ptr->getScreenRectangle().contains(uiInfo.uiState.getCursor())) {
 						ptr->deactivate();
 						return BIND::RESULT::CONTINUE;
 					}
 					return BIND::RESULT::CONTINUE;
 				});
 
-			ptr->addOnHoverBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::PRESSED }, [ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+			ptr->addOnHoverBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::PRESSED }, [ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					ptr->activate();
 					return BIND::RESULT::CONTINUE | BIND::RESULT::FOCUS | BIND::RESULT::CONSUME;
@@ -38,15 +36,15 @@ namespace ui
 		}
 
 		void focusable(Base* ptr) {
-			ptr->addOnHoverBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::PRESSED }, [](PlayerInfo& playerInfo) -> CallBackBindResult
+			ptr->addOnHoverBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::PRESSED }, [](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					return BIND::RESULT::CONTINUE | BIND::RESULT::CONSUME | BIND::RESULT::FOCUS;
 				});
 		}
 		void blockWorldBinds(Base* ptr) {
-			ptr->addOnHoverBind({ CONTROL::KEY::EVERY_TICK }, [](PlayerInfo& playerInfo) -> CallBackBindResult
+			ptr->addOnHoverBind({ CONTROL::KEY::EVERY_TICK }, [](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
-					playerInfo.controlState.setBlockWorldBinds(true);
+					uiInfo.controlState.setBlockWorldBinds(true);
 					return BIND::RESULT::CONTINUE;
 				});
 		}
@@ -57,12 +55,12 @@ namespace ui
 		void clickSelect(TextDisplay* ptr) {
 			ptr->setClickSupport(true);
 			ptr->addOnHoverBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::PRESSED },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 
 					Global<sound::SoundPlayer>->playSound(sound::Sample::BUTTON_CLICK, 80);
 
-					glm::ivec2 click = playerInfo.uiState.getCursor() - ptr->getScreenRectangle().getBottomLeft();
+					glm::ivec2 click = uiInfo.uiState.getCursor() - ptr->getScreenRectangle().getBottomLeft();
 
 					auto screenClick = pixelToScreen(click, ptr->getScreenRectangle().getPixelSize());
 					screenClick += ptr->text.getView();
@@ -81,19 +79,19 @@ namespace ui
 
 		void input(TextDisplay* ptr) {
 			ptr->addActiveBind({ CONTROL::KEY::CHAR_BUFFER_CHANGED, CONTROL::STATE::PRESSED },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					if (ptr->mode == TEXTDISPLAY::MODE::INSERT) {
 						Global<sound::SoundPlayer>->playSound(sound::Sample::TEXT_EDIT);
 
-						auto lines = misc::split(0, playerInfo.controlState.getCharBuffer(), '\n', true, true);
+						auto lines = misc::split(0, uiInfo.controlState.getCharBuffer(), '\n', true, true);
 						for (size_t i = 0; i < lines.size() - 1; i++) {
 							ptr->insertText(lines[i]);
 							ptr->text.matchWhiteSpace();
 						}
 
 						ptr->insertText(lines.back());
-						if (playerInfo.controlState.getCharBuffer().back() == '\n') {
+						if (uiInfo.controlState.getCharBuffer().back() == '\n') {
 							ptr->text.matchWhiteSpace();
 						}
 						return BIND::RESULT::CONTINUE | BIND::RESULT::CONSUME;
@@ -104,9 +102,9 @@ namespace ui
 
 		void inputNoLineBreaks(TextDisplay* ptr) {
 			ptr->addActiveBind({ CONTROL::KEY::CHAR_BUFFER_CHANGED, CONTROL::STATE::PRESSED },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
-					auto text = playerInfo.controlState.getCharBuffer();
+					auto text = uiInfo.controlState.getCharBuffer();
 					text.erase(std::remove_if(text.begin(), text.end(), [](auto const c) -> bool
 						{
 							return c == '\n';
@@ -119,7 +117,7 @@ namespace ui
 
 		void backspace(TextDisplay* ptr) {
 			ptr->addActiveBind({ CONTROL::KEY::BACKSPACE, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					ptr->backspaceChar();
 					Global<sound::SoundPlayer>->playSound(sound::Sample::TEXT_DELETE);
@@ -129,7 +127,7 @@ namespace ui
 
 		void tab(TextDisplay* ptr) {
 			ptr->addActiveBind({ CONTROL::KEY::TAB, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					ptr->insertText("  ");
 					Global<sound::SoundPlayer>->playSound(sound::Sample::TEXT_EDIT);
@@ -139,7 +137,7 @@ namespace ui
 
 		void del(TextDisplay* ptr) {
 			ptr->addActiveBind({ CONTROL::KEY::DELETE, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					ptr->deleteChar();
 					Global<sound::SoundPlayer>->playSound(sound::Sample::TEXT_DELETE);
@@ -149,7 +147,7 @@ namespace ui
 
 		void down(TextDisplay* ptr) {
 			ptr->addActiveBind({ CONTROL::KEY::TEXT_DOWN, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					ptr->moveCursor({ 0,1 });
 					Global<sound::SoundPlayer>->playSound(sound::Sample::BUTTON_HOVER, 30);
@@ -159,7 +157,7 @@ namespace ui
 
 		void up(TextDisplay* ptr) {
 			ptr->addActiveBind({ CONTROL::KEY::TEXT_UP, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					ptr->moveCursor({ 0,-1 });
 					Global<sound::SoundPlayer>->playSound(sound::Sample::BUTTON_HOVER, 30);
@@ -169,7 +167,7 @@ namespace ui
 
 		void right(TextDisplay* ptr) {
 			ptr->addActiveBind({ CONTROL::KEY::TEXT_RIGHT, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					ptr->moveCursor({ 1,0 });
 					Global<sound::SoundPlayer>->playSound(sound::Sample::BUTTON_HOVER, 30);
@@ -179,7 +177,7 @@ namespace ui
 
 		void left(TextDisplay* ptr) {
 			ptr->addActiveBind({ CONTROL::KEY::TEXT_LEFT, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					ptr->moveCursor({ -1,0 });
 					Global<sound::SoundPlayer>->playSound(sound::Sample::BUTTON_HOVER, 30);
@@ -189,7 +187,7 @@ namespace ui
 
 		void viewUp(TextDisplay* ptr) {
 			ptr->addOnHoverBind({ CONTROL::KEY::SCROLL_UP, CONTROL::STATE::PRESSED },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					ptr->text.moveView({ 0,-1 });
 					Global<sound::SoundPlayer>->playSound(sound::Sample::BUTTON_HOVER, 30);
@@ -199,7 +197,7 @@ namespace ui
 
 		void viewDown(TextDisplay* ptr) {
 			ptr->addOnHoverBind({ CONTROL::KEY::SCROLL_DOWN, CONTROL::STATE::PRESSED },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					ptr->text.moveView({ 0,1 });
 					Global<sound::SoundPlayer>->playSound(sound::Sample::BUTTON_HOVER, 30);
@@ -217,7 +215,7 @@ namespace ui
 
 		void normalbinds(TextDisplay* ptr) {
 			ptr->addActiveBind({ CONTROL::KEY::J, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					if (ptr->mode == TEXTDISPLAY::MODE::NORMAL) {
 						ptr->moveCursor({ 0,1 });
@@ -227,7 +225,7 @@ namespace ui
 				});
 
 			ptr->addActiveBind({ CONTROL::KEY::K, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					if (ptr->mode == TEXTDISPLAY::MODE::NORMAL) {
 						ptr->moveCursor({ 0,-1 });
@@ -237,7 +235,7 @@ namespace ui
 				});
 
 			ptr->addActiveBind({ CONTROL::KEY::L, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					if (ptr->mode == TEXTDISPLAY::MODE::NORMAL) {
 						ptr->moveCursor({ 1,0 });
@@ -247,7 +245,7 @@ namespace ui
 				});
 
 			ptr->addActiveBind({ CONTROL::KEY::H, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					if (ptr->mode == TEXTDISPLAY::MODE::NORMAL) {
 						ptr->moveCursor({ -1,0 });
@@ -257,7 +255,7 @@ namespace ui
 				});
 
 			ptr->addActiveBind({ CONTROL::KEY::W, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					if (ptr->mode == TEXTDISPLAY::MODE::NORMAL) {
 						ptr->moveStartWordForward();
@@ -269,7 +267,7 @@ namespace ui
 				});
 
 			ptr->addActiveBind({ CONTROL::KEY::B, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					if (ptr->mode == TEXTDISPLAY::MODE::NORMAL) {
 						ptr->moveStartWordBackward();
@@ -279,7 +277,7 @@ namespace ui
 				});
 
 			ptr->addActiveBind({ CONTROL::KEY::E, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					if (ptr->mode == TEXTDISPLAY::MODE::NORMAL) {
 						ptr->moveEndWord();
@@ -289,7 +287,7 @@ namespace ui
 				});
 
 			ptr->addActiveBind({ CONTROL::KEY::X, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					if (ptr->mode == TEXTDISPLAY::MODE::NORMAL) {
 						ptr->deleteChar();
@@ -299,28 +297,28 @@ namespace ui
 				});
 
 			ptr->addActiveBind({ CONTROL::KEY::P, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
-					if (ptr->paste(playerInfo.controlState)) {
+					if (ptr->paste(uiInfo.controlState)) {
 						return BIND::RESULT::CONTINUE | BIND::RESULT::CONSUME;
 					}
 					return BIND::RESULT::CONTINUE;
 				});
 
 			ptr->addActiveBind({ CONTROL::KEY::Y, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
-					if (ptr->yank(playerInfo.controlState)) {
+					if (ptr->yank(uiInfo.controlState)) {
 						return BIND::RESULT::CONTINUE | BIND::RESULT::CONSUME;
 					}
 					return BIND::RESULT::CONTINUE;
 				});
 
 			ptr->addActiveBind({ CONTROL::KEY::O, CONTROL::STATE::PRESSED | CONTROL::STATE::REPEAT },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					if (ptr->mode == TEXTDISPLAY::MODE::NORMAL && ptr->insertLineAfter()) {
-						playerInfo.controlState.consumeControl(CONTROL::KEY::CHAR_BUFFER_CHANGED);
+						uiInfo.controlState.consumeControl(CONTROL::KEY::CHAR_BUFFER_CHANGED);
 						ptr->setMode(TEXTDISPLAY::MODE::INSERT);
 						return BIND::RESULT::CONTINUE | BIND::RESULT::CONSUME;
 					}
@@ -333,7 +331,7 @@ namespace ui
 				{ { CONTROL::KEY::CANCEL },
 				  { CONTROL::KEY::C, CONTROL::STATE::PRESSED, CONTROL::MODIFIER::CONTROL }
 				},
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					ptr->setMode(TEXTDISPLAY::MODE::NORMAL);
 					return BIND::RESULT::CONTINUE | BIND::RESULT::CONSUME;
@@ -342,11 +340,11 @@ namespace ui
 
 		void insert(TextDisplay* ptr) {
 			ptr->addActiveBind({ CONTROL::KEY::I, CONTROL::STATE::PRESSED },
-				[ptr](PlayerInfo& playerInfo) -> CallBackBindResult
+				[ptr](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					if (ptr->mode == TEXTDISPLAY::MODE::NORMAL) {
 						ptr->setMode(TEXTDISPLAY::MODE::INSERT);
-						playerInfo.controlState.consumeControl(CONTROL::KEY::CHAR_BUFFER_CHANGED);
+						uiInfo.controlState.consumeControl(CONTROL::KEY::CHAR_BUFFER_CHANGED);
 						return BIND::RESULT::CONTINUE | BIND::RESULT::CONSUME;
 					}
 					return BIND::RESULT::CONTINUE;
@@ -355,14 +353,14 @@ namespace ui
 	}
 
 	void BUTTON::close(Button* ptr) {
-		ptr->setOnRelease([](PlayerInfo& playerInfo) -> CallBackBindResult
+		ptr->setOnRelease([](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 			{
 				return BIND::RESULT::CLOSE;
 			});
 	}
 
 	void BUTTON::hide(Button* ptr) {
-		ptr->setOnRelease([](PlayerInfo& playerInfo) -> CallBackBindResult
+		ptr->setOnRelease([](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 			{
 				return BIND::RESULT::HIDE;
 			});

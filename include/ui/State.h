@@ -29,7 +29,7 @@ namespace ui
 		glm::ivec2 cursor;
 		glm::ivec2 windowSize;
 
-		CallBackBindResult runFrontBinds(PlayerInfo& playerInfo);
+		CallBackBindResult runFrontBinds(UIInfo& uiInfo, UserData& userData);
 
 		std::unordered_map<std::string, ManagedReference<Base, Base>> namedUIs;
 
@@ -49,8 +49,8 @@ namespace ui
 		glm::ivec2 getWindowSize() const;
 		glm::ivec2 getCursorMovement() const;
 
-		void runUIBinds(PlayerInfo& playerInfo);
-		void run(PlayerInfo& playerInfo);
+		void runUIBinds(UIInfo& uiInfo, UserData& userData);
+		void run(UIInfo& uiInfo, UserData& userData);
 
 		bool updateSize(GLFWwindow* window);
 		void updateCursor(GLFWwindow* window, glm::vec2 cam);

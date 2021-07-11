@@ -15,6 +15,8 @@ namespace ui
 		this->keyToControl[GLFW_KEY_D].push_back(CONTROL::KEY::RIGHT);
 		this->keyToControl[GLFW_KEY_W].push_back(CONTROL::KEY::UP);
 		this->keyToControl[GLFW_KEY_S].push_back(CONTROL::KEY::DOWN);
+		this->keyToControl[GLFW_KEY_SPACE].push_back(CONTROL::KEY::JUMP);
+
 		this->keyToControl[GLFW_KEY_Q].push_back(CONTROL::KEY::ACTION_PICK);
 		this->keyToControl[GLFW_KEY_F].push_back(CONTROL::KEY::ACTION_DELETE);
 		this->keyToControl[GLFW_KEY_E].push_back(CONTROL::KEY::ACTION_USE);

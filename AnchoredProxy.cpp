@@ -1,7 +1,5 @@
 #include "AnchoredProxy.h"
 
-#include <game/player/PlayerInfo.h>
-
 #include "State.h"
 #include "Constructer.h"
 #include "Destructible.h"
@@ -28,9 +26,9 @@ namespace ui
 		this->proxyBase.set(this->destructible);
 
 		auto ptr = makeEnd(std::move(ref));
-		ptr.get()->addGlobalBind({ CONTROL::KEY::ACTION0 }, [this](PlayerInfo& playerInfo) -> CallBackBindResult
+		ptr.get()->addGlobalBind({ CONTROL::KEY::ACTION0 }, [this](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 		{
-			if (!this->getScreenRectangle().contains(playerInfo.uiState.getCursor())) {
+			if (!this->getScreenRectangle().contains(uiInfo.uiState.getCursor())) {
 				return BIND::RESULT::CLOSE;
 			}
 			else {
@@ -38,7 +36,7 @@ namespace ui
 			}
 		});
 
-		ptr.get()->addOnHoverBind({ CONTROL::KEY::ACTION0 }, [](PlayerInfo& playerInfo) -> CallBackBindResult
+		ptr.get()->addOnHoverBind({ CONTROL::KEY::ACTION0 }, [](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 		{
 			return BIND::RESULT::CONSUME;
 		});

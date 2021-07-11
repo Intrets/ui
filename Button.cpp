@@ -1,7 +1,5 @@
 #include "Button.h"
 
-#include <game/player/PlayerInfo.h>
-
 #include <mem/Global.h>
 
 #include <sound/SoundPlayer.h>
@@ -44,18 +42,18 @@ namespace ui
 	}
 
 	Button::Button() {
-		this->onPress = [](PlayerInfo& playerInfo) -> CallBackBindResult
+		this->onPress = [](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 		{
 			return BIND::RESULT::CONTINUE;
 		};
 
-		this->onRelease = [](PlayerInfo& playerInfo) -> CallBackBindResult
+		this->onRelease = [](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 		{
 			return BIND::RESULT::CONTINUE;
 		};
 
 		this->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL, CONTROL::STATE::PRESSED },
-			[this](PlayerInfo& playerInfo) -> CallBackBindResult
+			[this](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 			{
 				if (this->isDown() && !this->isActive()) {
 					Global<sound::SoundPlayer>->playSound(sound::Sample::BUTTON_HOVER, 30);
@@ -64,30 +62,30 @@ namespace ui
 				return BIND::RESULT::CONSUME;
 			});
 
-		this->addGlobalBind({ CONTROL::KEY::MOUSE_POS_CHANGED, CONTROL::STATE::PRESSED }, [this](PlayerInfo& playerInfo) -> CallBackBindResult
+		this->addGlobalBind({ CONTROL::KEY::MOUSE_POS_CHANGED, CONTROL::STATE::PRESSED }, [this](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 			{
-				if (!this->getScreenRectangle().contains(playerInfo.uiState.getCursor()) ||
-					!playerInfo.controlState.activated({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL })) {
+				if (!this->getScreenRectangle().contains(uiInfo.uiState.getCursor()) ||
+					!uiInfo.controlState.activated({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL })) {
 					this->deactivate();
 				}
 				return BIND::RESULT::CONTINUE;
 			});
 
-		this->addOnHoverBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::PRESSED }, [this](PlayerInfo& playerInfo) -> CallBackBindResult
+		this->addOnHoverBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::PRESSED }, [this](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 			{
 				this->down = true;
-				this->mousePressOffset = playerInfo.uiState.getCursor() - this->getScreenRectangle().getTopLeft();
+				this->mousePressOffset = uiInfo.uiState.getCursor() - this->getScreenRectangle().getTopLeft();
 				Global<sound::SoundPlayer>->playSound(sound::Sample::BUTTON_CLICK, 80);
-				return this->onPress(playerInfo) | BIND::RESULT::FOCUS | BIND::RESULT::CONSUME;
+				return this->onPress(uiInfo, userData) | BIND::RESULT::FOCUS | BIND::RESULT::CONSUME;
 			});
 
-		this->addGlobalBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::RELEASED }, [this](PlayerInfo& playerInfo) -> CallBackBindResult
+		this->addGlobalBind({ CONTROL::KEY::ACTION0, CONTROL::STATE::RELEASED }, [this](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 			{
 				if (this->down) {
 					this->down = false;
 
-					if (this->getScreenRectangle().contains(playerInfo.uiState.getCursor())) {
-						return this->onRelease(playerInfo) | BIND::RESULT::CONTINUE;
+					if (this->getScreenRectangle().contains(uiInfo.uiState.getCursor())) {
+						return this->onRelease(uiInfo, userData) | BIND::RESULT::CONTINUE;
 					}
 					else {
 						return BIND::RESULT::CONTINUE;

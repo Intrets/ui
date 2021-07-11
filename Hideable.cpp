@@ -1,7 +1,5 @@
 #include "Hideable.h"
 
-#include <game/player/PlayerInfo.h>
-
 namespace ui
 {
 	void Hideable::hide() {
@@ -15,7 +13,7 @@ namespace ui
 		}
 	}
 
-	CallBackBindResult Hideable::runGlobalBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Hideable::runGlobalBinds(UIInfo& uiInfo, UserData& userData) {
 		int32_t res = 0;
 		if (this->shouldFocus) {
 			res |= BIND::RESULT::FOCUS;
@@ -23,7 +21,7 @@ namespace ui
 		}
 
 		if (!this->hidden) {
-			res |= this->BaseSingle::runGlobalBinds(playerInfo);
+			res |= this->BaseSingle::runGlobalBinds(uiInfo, userData);
 			if (res & BIND::RESULT::HIDE) {
 				res &= ~BIND::RESULT::HIDE;
 				this->hidden = true;
@@ -35,9 +33,9 @@ namespace ui
 		}
 	}
 
-	CallBackBindResult Hideable::runFocussedBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Hideable::runFocussedBinds(UIInfo& uiInfo, UserData& userData) {
 		if (!this->hidden) {
-			int32_t res = this->BaseSingle::runFocussedBinds(playerInfo);
+			int32_t res = this->BaseSingle::runFocussedBinds(uiInfo, userData);
 			if (res & BIND::RESULT::HIDE) {
 				res &= ~BIND::RESULT::HIDE;
 				this->hidden = true;
@@ -49,9 +47,9 @@ namespace ui
 		}
 	}
 
-	CallBackBindResult Hideable::runOnHoverBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Hideable::runOnHoverBinds(UIInfo& uiInfo, UserData& userData) {
 		if (!this->hidden) {
-			int32_t res = this->BaseSingle::runOnHoverBinds(playerInfo);
+			int32_t res = this->BaseSingle::runOnHoverBinds(uiInfo, userData);
 			if (res & BIND::RESULT::HIDE) {
 				res &= ~BIND::RESULT::HIDE;
 				this->hidden = true;
@@ -63,9 +61,9 @@ namespace ui
 		}
 	}
 
-	CallBackBindResult Hideable::runActiveBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Hideable::runActiveBinds(UIInfo& uiInfo, UserData& userData) {
 		if (!this->hidden) {
-			int32_t res = this->BaseSingle::runActiveBinds(playerInfo);
+			int32_t res = this->BaseSingle::runActiveBinds(uiInfo, userData);
 			if (res & BIND::RESULT::HIDE) {
 				res &= ~BIND::RESULT::HIDE;
 				this->hidden = true;
@@ -77,9 +75,9 @@ namespace ui
 		}
 	}
 
-	CallBackBindResult Hideable::runGameWorldBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Hideable::runGameWorldBinds(UIInfo& uiInfo, UserData& userData) {
 		if (!this->hidden) {
-			int32_t res = this->BaseSingle::runGameWorldBinds(playerInfo);
+			int32_t res = this->BaseSingle::runGameWorldBinds(uiInfo, userData);
 			if (res & BIND::RESULT::HIDE) {
 				res &= ~BIND::RESULT::HIDE;
 				this->hidden = true;

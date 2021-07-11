@@ -31,7 +31,7 @@ namespace ui
 
 		virtual void translate(glm::vec2 p) override;
 
-		virtual	CallBackBindResult runActiveBinds(PlayerInfo& playerInfo) override;
+		virtual	CallBackBindResult runActiveBinds(UIInfo& uiInfo, UserData& userData) override;
 
 		void setMode(TEXTDISPLAY::MODE mode_);
 

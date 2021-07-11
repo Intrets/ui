@@ -1,7 +1,5 @@
 #include "State.h"
 
-#include <game/player/PlayerInfo.h>
-
 #include <wglm/gtx/euler_angles.hpp>
 
 #include <GL/glew.h>
@@ -15,16 +13,16 @@
 
 namespace ui
 {
-	CallBackBindResult State::runFrontBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult State::runFrontBinds(UIInfo& uiInfo, UserData& userData) {
 		if (this->UIs.size() == 0) {
 			return BIND::RESULT::CONTINUE;
 		}
 
 		CallBackBindResult activeResult =
-			this->UIs.front().get()->runOnHoverBinds(playerInfo) |
-			this->UIs.front().get()->runFocussedBinds(playerInfo) |
-			this->UIs.front().get()->runActiveBinds(playerInfo) |
-			this->UIs.front().get()->runGlobalBinds(playerInfo);
+			this->UIs.front().get()->runOnHoverBinds(uiInfo, userData) |
+			this->UIs.front().get()->runFocussedBinds(uiInfo, userData) |
+			this->UIs.front().get()->runActiveBinds(uiInfo, userData) |
+			this->UIs.front().get()->runGlobalBinds(uiInfo, userData);
 		CallBackBindResult res = 0;
 
 		bool shouldExit = false;
@@ -46,6 +44,7 @@ namespace ui
 	}
 
 	glm::vec2 State::getCursorPositionWorld() {
+		assert(0);
 		return this->cursorWorld;
 	}
 
@@ -61,8 +60,8 @@ namespace ui
 		return this->cursorMovement;
 	}
 
-	void State::runUIBinds(PlayerInfo& playerInfo) {
-		auto front = this->runFrontBinds(playerInfo);
+	void State::runUIBinds(UIInfo& uiInfo, UserData& userData) {
+		auto front = this->runFrontBinds(uiInfo, userData);
 
 		if (front & BIND::RESULT::STOP) {
 			return;
@@ -72,7 +71,7 @@ namespace ui
 			return;
 		}
 
-		playerInfo.controlState.writeConsumedBuffer();
+		uiInfo.controlState.writeConsumedBuffer();
 
 		if (this->UIs.size() > 1) {
 			auto it = this->UIs.begin(), last = this->UIs.end();
@@ -84,7 +83,7 @@ namespace ui
 			}
 			for (; it != last;) {
 				auto& UI = *it;
-				CallBackBindResult res = UI.get()->runOnHoverBinds(playerInfo) | UI.get()->runGlobalBinds(playerInfo);
+				CallBackBindResult res = UI.get()->runOnHoverBinds(uiInfo, userData) | UI.get()->runGlobalBinds(uiInfo, userData);
 
 				if (res & BIND::RESULT::CLOSE) {
 					it = this->UIs.erase(it);
@@ -100,14 +99,14 @@ namespace ui
 				if (res & BIND::RESULT::STOP) {
 					return;
 				}
-				playerInfo.controlState.writeConsumedBuffer();
+				uiInfo.controlState.writeConsumedBuffer();
 			}
 		}
 
-		if (!playerInfo.controlState.worldBindsBlocked()) {
+		if (!uiInfo.controlState.worldBindsBlocked()) {
 			for (auto it = this->UIs.begin(); it != this->UIs.end();) {
 				auto& UI = *it;
-				CallBackBindResult res = UI.get()->runGameWorldBinds(playerInfo);
+				CallBackBindResult res = UI.get()->runGameWorldBinds(uiInfo, userData);
 
 				if (res & BIND::RESULT::CLOSE) {
 					it = this->UIs.erase(it);
@@ -123,13 +122,13 @@ namespace ui
 				if (res & BIND::RESULT::STOP) {
 					return;
 				}
-				playerInfo.controlState.writeConsumedBuffer();
+				uiInfo.controlState.writeConsumedBuffer();
 			}
 		}
 	}
 
-	void State::run(PlayerInfo& playerInfo) {
-		this->runUIBinds(playerInfo);
+	void State::run(UIInfo& uiInfo, UserData& userData) {
+		this->runUIBinds(uiInfo, userData);
 
 		for (auto it = this->namedUIs.begin(), last = this->namedUIs.end(); it != last;) {
 			if (!it->second.isValid()) {
@@ -206,7 +205,7 @@ namespace ui
 	}
 
 	void State::addUI(UniqueReference<Base, Base> ref) {
-		ref.get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](PlayerInfo& playerInfo) -> CallBackBindResult
+		ref.get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 			{
 				return BIND::RESULT::CONSUME;
 			});
@@ -236,7 +235,7 @@ namespace ui
 		}
 
 		this->namedUIsBuffer[name] = f();
-		this->namedUIsBuffer[name].get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](PlayerInfo& playerInfo) -> CallBackBindResult
+		this->namedUIsBuffer[name].get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 			{
 				return BIND::RESULT::CONSUME;
 			});
@@ -246,7 +245,7 @@ namespace ui
 	void State::addNamedUIReplace(std::string const& name, UniqueReference<Base, Base> ref) {
 		this->closeNamedUI(name);
 
-		ref.get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](PlayerInfo& playerInfo) -> CallBackBindResult
+		ref.get()->addOnHoverBind({ CONTROL::KEY::MOUSE_POS_CHANGED_TOPLEVEL }, [](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 			{
 				return BIND::RESULT::CONSUME;
 			});
@@ -297,66 +296,12 @@ namespace ui
 	}
 
 	void State::init() {
-		// Test window
-		{
-			//Global::push();
-
-			//hideable();
-			//window("Inventory",
-			//	{ 0.7f, 0.7f, 1.0f, 1.0f },
-			//	WINDOW::TYPE::MINIMISE |
-			//	WINDOW::TYPE::MOVE |
-			//	WINDOW::TYPE::RESIZE |
-			//	WINDOW::TYPE::HIDE);
-
-			//constrainHeight({ SIZETYPE::FH, 1.2f });
-			//textButton("test button");
-
-			//this->UIs.push_back(Global::pop());
-		}
-
-		//// Inventory
-		//{
-		//	UIO2::Global::push();
-
-		//	UIO2::hideable();
-		//	UIO2::window("Inventory", { {0.5f - 0.04f, -0.1f - 0.04f}, {1.0f - 0.04f, 1.0f - 0.04f} },
-		//				 UIOWindow::TYPE::MINIMISE |
-		//				 UIOWindow::TYPE::MOVE |
-		//				 UIOWindow::TYPE::HIDE);
-		//	UIO2::makeEnd<UIOInventory>();
-
-		//	this->addUI(UIO2::Global::pop());
-		//}
-
-		//// Cursor renderer
-		//{
-		//	UIO2::Global::push();
-
-		//	UIO2::makeEnd<UIOCursor>();
-
-		//	this->addUI(UIO2::Global::pop());
-		//}
-
-		//// Hotbar
-		//{
-		//	UIO2::Global::push();
-
-		//	UIO2::constrainHeight({ UIO::SIZETYPE::RELATIVE_WIDTH, 0.05f });
-		//	UIO2::constrainWidth({ UIO::SIZETYPE::RELATIVE_WIDTH, 0.5f });
-		//	UIO2::alignBottom();
-		//	UIO2::background(COLORS::UI::WINDOWBACKGROUND);
-		//	UIO2::makeEnd<UIOHotbar>();
-
-		//	this->addUI(UIO2::Global::pop());
-		//}
-
 		{
 			UniqueReference<Base, Invisible> someBinds = Global::getManager().makeUniqueRef<Invisible>();
 
 			someBinds.get()->addGlobalBind(
 				{ CONTROL::KEY::TOGGLE_DEBUG_RENDER },
-				[](PlayerInfo& playerInfo) -> CallBackBindResult
+				[](UIInfo& uiInfo, UserData& userData) -> CallBackBindResult
 				{
 					misc::Option<misc::OPTION::GR_DEBUG, bool>::toggle();
 					return BIND::RESULT::CONTINUE;
@@ -365,70 +310,6 @@ namespace ui
 			this->UIs.push_back(std::move(someBinds));
 		}
 
-		// wasd movement in world
-		{
-			UniqueReference<Base, Invisible> movement = Global::getManager().makeUniqueRef<Invisible>();
-
-			movement.get()->addGlobalBind({ CONTROL::KEY::MOUSE_POS_CHANGED, CONTROL::STATE::PRESSED }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
-				{
-					auto d = glm::vec2(playerInfo.uiState.getCursorMovement()) / 500.0f;
-					playerInfo.look += glm::vec3(0.0f, d.y, -d.x);
-					playerInfo.look.y = glm::clamp(playerInfo.look.y, 0.0f, glm::pi<float>());
-					return BIND::RESULT::CONTINUE;
-				});
-
-			movement.get()->addGlobalBind({ CONTROL::KEY::LEFT, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
-				{
-					glm::vec4 dir{ 1.0f, 0.0f, 0.0f, 1.0f };
-					auto M = glm::yawPitchRoll(-playerInfo.look.x, -playerInfo.look.y, -playerInfo.look.z);
-					dir = dir * M;
-					playerInfo.pos -= glm::vec3(dir) / 2.0f;
-					return BIND::RESULT::CONTINUE;
-				});
-
-			movement.get()->addGlobalBind({ CONTROL::KEY::RIGHT, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
-				{
-					glm::vec4 dir{ 1.0f, 0.0f, 0.0f, 1.0f };
-					auto M = glm::yawPitchRoll(-playerInfo.look.x, -playerInfo.look.y, -playerInfo.look.z);
-					dir = dir * M;
-					playerInfo.pos += glm::vec3(dir) / 2.0f;
-					return BIND::RESULT::CONTINUE;
-				});
-
-			movement.get()->addGlobalBind({ CONTROL::KEY::DOWN, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
-				{
-					glm::vec4 dir{ 0.0f, 0.0f, 1.0f, 1.0f };
-					auto M = glm::yawPitchRoll(-playerInfo.look.x, -playerInfo.look.y, -playerInfo.look.z);
-					dir = dir * M;
-					playerInfo.pos += glm::vec3(dir) / 2.0f;
-					return BIND::RESULT::CONTINUE;
-				});
-
-			movement.get()->addGlobalBind({ CONTROL::KEY::UP, CONTROL::STATE::PRESSED | CONTROL::STATE::DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
-				{
-					glm::vec4 dir{ 0.0f, 0.0f, 1.0f, 1.0f };
-					auto M = glm::yawPitchRoll(-playerInfo.look.x, -playerInfo.look.y, -playerInfo.look.z);
-					dir = dir * M;
-					playerInfo.pos -= glm::vec3(dir) / 2.0f;
-					return BIND::RESULT::CONTINUE;
-				});
-
-			movement.get()->addGlobalBind({ CONTROL::KEY::SCROLL_UP }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
-				{
-					using viewport = misc::Option<misc::OPTION::CL_VIEWPORTSCALE, float>;
-					viewport::setVal(viewport::getVal() / 1.1f);
-					return BIND::RESULT::CONTINUE;
-				});
-
-			movement.get()->addGlobalBind({ CONTROL::KEY::SCROLL_DOWN }, [&](PlayerInfo& playerInfo) -> CallBackBindResult
-				{
-					using viewport = misc::Option<misc::OPTION::CL_VIEWPORTSCALE, float>;
-					viewport::setVal(viewport::getVal() * 1.1f);
-					return BIND::RESULT::CONTINUE;
-				});
-
-			this->UIs.push_back(std::move(movement));
-		}
 
 	}
 

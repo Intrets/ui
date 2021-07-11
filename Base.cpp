@@ -1,7 +1,6 @@
 #include "Base.h"
 
 #include <misc/Rectangle.h>
-#include <game/player/PlayerInfo.h>
 
 #include <ui/State.h>
 #include <ui/ControlState.h>
@@ -118,15 +117,15 @@ namespace ui
 		}
 	}
 
-	CallBackBindResult Base::runGlobalBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Base::runGlobalBinds(UIInfo& uiInfo, UserData& userData) {
 		CallBackBindResult sumResult = 0;
 
 		for (auto& [control, bind] : this->globalBinds) {
-			if (playerInfo.controlState.activated(control)) {
-				CallBackBindResult bindResult = bind(playerInfo);
+			if (uiInfo.controlState.activated(control)) {
+				CallBackBindResult bindResult = bind(uiInfo, userData);
 				sumResult |= bindResult;
 				if (bindResult & BIND::RESULT::CONSUME) {
-					playerInfo.controlState.consumeBufferControl(control.control);
+					uiInfo.controlState.consumeBufferControl(control.control);
 				}
 				if (sumResult & BIND::RESULT::STOP) {
 					return sumResult;
@@ -137,14 +136,14 @@ namespace ui
 		return sumResult;
 	}
 
-	CallBackBindResult Base::runFocussedBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Base::runFocussedBinds(UIInfo& uiInfo, UserData& userData) {
 		CallBackBindResult sumResult = 0;
 
 		for (auto& [control, bind] : this->focussedBinds) {
-			if (playerInfo.controlState.activated(control)) {
-				CallBackBindResult bindResult = bind(playerInfo);
+			if (uiInfo.controlState.activated(control)) {
+				CallBackBindResult bindResult = bind(uiInfo, userData);
 				if (bindResult & BIND::RESULT::CONSUME) {
-					playerInfo.controlState.consumeBufferControl(control.control);
+					uiInfo.controlState.consumeBufferControl(control.control);
 				}
 				sumResult |= bindResult;
 				if (sumResult & BIND::RESULT::STOP) {
@@ -156,15 +155,15 @@ namespace ui
 		return sumResult;
 	}
 
-	CallBackBindResult Base::runOnHoverBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Base::runOnHoverBinds(UIInfo& uiInfo, UserData& userData) {
 		CallBackBindResult sumResult = 0;
 
 		for (auto& [control, bind] : onHoverBinds) {
-			if (playerInfo.controlState.activated(control)) {
-				CallBackBindResult bindResult = bind(playerInfo);
+			if (uiInfo.controlState.activated(control)) {
+				CallBackBindResult bindResult = bind(uiInfo, userData);
 				sumResult |= bindResult;
 				if (bindResult & BIND::RESULT::CONSUME) {
-					playerInfo.controlState.consumeBufferControl(control.control);
+					uiInfo.controlState.consumeBufferControl(control.control);
 				}
 				if (sumResult & BIND::RESULT::STOP) {
 					return sumResult;
@@ -175,16 +174,16 @@ namespace ui
 		return sumResult;
 	}
 
-	CallBackBindResult Base::runActiveBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Base::runActiveBinds(UIInfo& uiInfo, UserData& userData) {
 		CallBackBindResult sumResult = 0;
 
 		if (this->active) {
 			for (auto& [control, bind] : activeBinds) {
-				if (playerInfo.controlState.activated(control)) {
-					CallBackBindResult bindResult = bind(playerInfo);
+				if (uiInfo.controlState.activated(control)) {
+					CallBackBindResult bindResult = bind(uiInfo, userData);
 					sumResult |= bindResult;
 					if (bindResult & BIND::RESULT::CONSUME) {
-						playerInfo.controlState.consumeBufferControl(control.control);
+						uiInfo.controlState.consumeBufferControl(control.control);
 					}
 					if (sumResult & BIND::RESULT::STOP) {
 						return sumResult;
@@ -196,15 +195,15 @@ namespace ui
 		return sumResult;
 	}
 
-	CallBackBindResult Base::runGameWorldBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult Base::runGameWorldBinds(UIInfo& uiInfo, UserData& userData) {
 		CallBackBindResult sumResult = 0;
 
 		for (auto& [control, bind] : this->gameWorldBinds) {
-			if (playerInfo.controlState.activated(control)) {
-				CallBackBindResult bindResult = bind(playerInfo);
+			if (uiInfo.controlState.activated(control)) {
+				CallBackBindResult bindResult = bind(uiInfo, userData);
 				sumResult |= bindResult;
 				if (bindResult & BIND::RESULT::CONSUME) {
-					playerInfo.controlState.consumeBufferControl(control.control);
+					uiInfo.controlState.consumeBufferControl(control.control);
 				}
 				if (sumResult & BIND::RESULT::STOP) {
 					return sumResult;
@@ -215,77 +214,77 @@ namespace ui
 		return sumResult;
 	}
 
-	CallBackBindResult BaseMulti::runGlobalBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult BaseMulti::runGlobalBinds(UIInfo& uiInfo, UserData& userData) {
 		CallBackBindResult sumResult = 0;
 
 		for (auto& element : this->elements) {
-			CallBackBindResult elementResult = element.get()->runGlobalBinds(playerInfo);
+			CallBackBindResult elementResult = element.get()->runGlobalBinds(uiInfo, userData);
 			sumResult |= elementResult;
 			if (sumResult & BIND::RESULT::STOP) {
 				return sumResult;
 			}
 		}
 
-		return sumResult | this->Base::runGlobalBinds(playerInfo);
+		return sumResult | this->Base::runGlobalBinds(uiInfo, userData);
 	}
 
-	CallBackBindResult BaseMulti::runFocussedBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult BaseMulti::runFocussedBinds(UIInfo& uiInfo, UserData& userData) {
 		CallBackBindResult sumResult = 0;
 
 		for (auto& element : this->elements) {
-			CallBackBindResult elementResult = element.get()->runFocussedBinds(playerInfo);
+			CallBackBindResult elementResult = element.get()->runFocussedBinds(uiInfo, userData);
 			sumResult |= elementResult;
 			if (sumResult & BIND::RESULT::STOP) {
 				return sumResult;
 			}
 		}
 
-		return sumResult | this->Base::runFocussedBinds(playerInfo);
+		return sumResult | this->Base::runFocussedBinds(uiInfo, userData);
 	}
 
-	CallBackBindResult BaseMulti::runOnHoverBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult BaseMulti::runOnHoverBinds(UIInfo& uiInfo, UserData& userData) {
 		CallBackBindResult sumResult = 0;
-		if (!this->screenRectangle.contains(playerInfo.uiState.getCursor())) {
+		if (!this->screenRectangle.contains(uiInfo.uiState.getCursor())) {
 			return sumResult;
 		}
 
 		for (auto& element : this->elements) {
-			CallBackBindResult elementResult = element.get()->runOnHoverBinds(playerInfo);
+			CallBackBindResult elementResult = element.get()->runOnHoverBinds(uiInfo, userData);
 			sumResult |= elementResult;
 			if (sumResult & BIND::RESULT::STOP) {
 				return sumResult;
 			}
 		}
 
-		return sumResult | this->Base::runOnHoverBinds(playerInfo);
+		return sumResult | this->Base::runOnHoverBinds(uiInfo, userData);
 	}
 
-	CallBackBindResult BaseMulti::runActiveBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult BaseMulti::runActiveBinds(UIInfo& uiInfo, UserData& userData) {
 		CallBackBindResult sumResult = 0;
 
 		for (auto& element : this->elements) {
-			CallBackBindResult elementResult = element.get()->runActiveBinds(playerInfo);
+			CallBackBindResult elementResult = element.get()->runActiveBinds(uiInfo, userData);
 			sumResult |= elementResult;
 			if (sumResult & BIND::RESULT::STOP) {
 				return sumResult;
 			}
 		}
 
-		return sumResult | this->Base::runActiveBinds(playerInfo);
+		return sumResult | this->Base::runActiveBinds(uiInfo, userData);
 	}
 
-	CallBackBindResult BaseMulti::runGameWorldBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult BaseMulti::runGameWorldBinds(UIInfo& uiInfo, UserData& userData) {
 		CallBackBindResult sumResult = 0;
 
 		for (auto& element : this->elements) {
-			CallBackBindResult elementResult = element.get()->runGameWorldBinds(playerInfo);
+			CallBackBindResult elementResult = element.get()->runGameWorldBinds(uiInfo, userData);
 			sumResult |= elementResult;
 			if (sumResult & BIND::RESULT::STOP) {
 				return sumResult;
 			}
 		}
 
-		return sumResult | this->Base::runGameWorldBinds(playerInfo);
+		return sumResult | this->Base::runGameWorldBinds(uiInfo, userData);
 	}
 
 	int32_t BaseMulti::addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) {
@@ -318,55 +317,55 @@ namespace ui
 		return this->screenRectangle;
 	}
 
-	CallBackBindResult BaseSingle::runGlobalBinds(PlayerInfo& playerInfo) {
-		CallBackBindResult sumResult = this->main.get()->runGlobalBinds(playerInfo);
+	CallBackBindResult BaseSingle::runGlobalBinds(UIInfo& uiInfo, UserData& userData) {
+		CallBackBindResult sumResult = this->main.get()->runGlobalBinds(uiInfo, userData);
 		if (sumResult & BIND::RESULT::STOP) {
 			return sumResult;
 		}
 
-		return sumResult | this->Base::runGlobalBinds(playerInfo);
+		return sumResult | this->Base::runGlobalBinds(uiInfo, userData);
 	}
 
-	CallBackBindResult BaseSingle::runFocussedBinds(PlayerInfo& playerInfo) {
-		CallBackBindResult sumResult = this->main.get()->runFocussedBinds(playerInfo);
+	CallBackBindResult BaseSingle::runFocussedBinds(UIInfo& uiInfo, UserData& userData) {
+		CallBackBindResult sumResult = this->main.get()->runFocussedBinds(uiInfo, userData);
 		if (sumResult & BIND::RESULT::STOP) {
 			return sumResult;
 		}
 
-		return sumResult | this->Base::runFocussedBinds(playerInfo);
+		return sumResult | this->Base::runFocussedBinds(uiInfo, userData);
 	}
 
-	CallBackBindResult BaseSingle::runOnHoverBinds(PlayerInfo& playerInfo) {
+	CallBackBindResult BaseSingle::runOnHoverBinds(UIInfo& uiInfo, UserData& userData) {
 		CallBackBindResult sumResult = 0;
-		if (!this->screenRectangle.contains(playerInfo.uiState.getCursor())) {
+		if (!this->screenRectangle.contains(uiInfo.uiState.getCursor())) {
 			return sumResult;
 		}
 
-		sumResult = this->main.get()->runOnHoverBinds(playerInfo);
+		sumResult = this->main.get()->runOnHoverBinds(uiInfo, userData);
 
 		if (sumResult & BIND::RESULT::STOP) {
 			return sumResult;
 		}
 
-		return sumResult | this->Base::runOnHoverBinds(playerInfo);
+		return sumResult | this->Base::runOnHoverBinds(uiInfo, userData);
 	}
 
-	CallBackBindResult BaseSingle::runActiveBinds(PlayerInfo& playerInfo) {
-		CallBackBindResult sumResult = this->main.get()->runActiveBinds(playerInfo);
+	CallBackBindResult BaseSingle::runActiveBinds(UIInfo& uiInfo, UserData& userData) {
+		CallBackBindResult sumResult = this->main.get()->runActiveBinds(uiInfo, userData);
 		if (sumResult & BIND::RESULT::STOP) {
 			return sumResult;
 		}
 
-		return sumResult | this->Base::runActiveBinds(playerInfo);
+		return sumResult | this->Base::runActiveBinds(uiInfo, userData);
 	}
 
-	CallBackBindResult BaseSingle::runGameWorldBinds(PlayerInfo& playerInfo) {
-		CallBackBindResult sumResult = this->main.get()->runGameWorldBinds(playerInfo);
+	CallBackBindResult BaseSingle::runGameWorldBinds(UIInfo& uiInfo, UserData& userData) {
+		CallBackBindResult sumResult = this->main.get()->runGameWorldBinds(uiInfo, userData);
 		if (sumResult & BIND::RESULT::STOP) {
 			return sumResult;
 		}
 
-		return sumResult | this->Base::runGameWorldBinds(playerInfo);
+		return sumResult | this->Base::runGameWorldBinds(uiInfo, userData);
 	}
 
 	int32_t BaseSingle::addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) {

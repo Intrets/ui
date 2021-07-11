@@ -40,7 +40,6 @@ make_module(
 		GLFW3
 		mem
 		misc
-		game
 		render
 		SDL2::SDL2-static
 		SDL_Mixer

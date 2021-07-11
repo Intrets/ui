@@ -27,10 +27,18 @@ namespace game
 	struct GameState;
 }
 
-struct PlayerInfo;
+struct UserData;
 
 namespace ui
 {
+	class State;
+
+	struct UIInfo
+	{
+		ControlState& controlState;
+		State& uiState;
+	};
+
 	class Base;
 
 	namespace BIND
@@ -47,8 +55,7 @@ namespace ui
 	}
 
 	using CallBackBindResult = int32_t;
-	using PlayerInfo = PlayerInfo;
-	using CallBack = std::function<CallBackBindResult(PlayerInfo& playerInfo)>;
+	using CallBack = std::function<CallBackBindResult(UIInfo& uiInfo, UserData& userData)>;
 
 	class State;
 
@@ -94,11 +101,11 @@ namespace ui
 		void addActiveBinds(std::vector<BindControl> const& bindControls, CallBack callBack);
 		void addGameWorldBinds(std::vector<BindControl> const& bindControls, CallBack callBack);
 
-		virtual CallBackBindResult runGlobalBinds(PlayerInfo& playerInfo);
-		virtual CallBackBindResult runFocussedBinds(PlayerInfo& playerInfo);
-		virtual CallBackBindResult runOnHoverBinds(PlayerInfo& playerInfo);
-		virtual CallBackBindResult runActiveBinds(PlayerInfo& playerInfo);
-		virtual CallBackBindResult runGameWorldBinds(PlayerInfo& playerInfo);
+		virtual CallBackBindResult runGlobalBinds(UIInfo& uiInfo, UserData& userData);
+		virtual CallBackBindResult runFocussedBinds(UIInfo& uiInfo, UserData& userData);
+		virtual CallBackBindResult runOnHoverBinds(UIInfo& uiInfo, UserData& userData);
+		virtual CallBackBindResult runActiveBinds(UIInfo& uiInfo, UserData& userData);
+		virtual CallBackBindResult runGameWorldBinds(UIInfo& uiInfo, UserData& userData);
 
 		virtual ScreenRectangle updateSize(ScreenRectangle newScreenRectangle) = 0;
 
@@ -126,11 +133,11 @@ namespace ui
 
 		virtual ScreenRectangle updateSize(ScreenRectangle newScreenRectangle) override;
 
-		virtual CallBackBindResult runGlobalBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runFocussedBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runOnHoverBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runActiveBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runGameWorldBinds(PlayerInfo& playerInfo) override;
+		virtual CallBackBindResult runGlobalBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runFocussedBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runOnHoverBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runActiveBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runGameWorldBinds(UIInfo& uiInfo, UserData& userData) override;
 
 		virtual int32_t addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) override;
 
@@ -151,11 +158,11 @@ namespace ui
 
 		virtual ScreenRectangle updateSize(ScreenRectangle newScreenRectangle) override;
 
-		virtual CallBackBindResult runGlobalBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runFocussedBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runOnHoverBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runActiveBinds(PlayerInfo& playerInfo) override;
-		virtual CallBackBindResult runGameWorldBinds(PlayerInfo& playerInfo) override;
+		virtual CallBackBindResult runGlobalBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runFocussedBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runOnHoverBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runActiveBinds(UIInfo& uiInfo, UserData& userData) override;
+		virtual CallBackBindResult runGameWorldBinds(UIInfo& uiInfo, UserData& userData) override;
 
 		virtual int32_t addRenderInfo(int32_t ticks, render::UIInfos& renderInfo, int32_t depth) override;
 

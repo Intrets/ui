@@ -1,7 +1,5 @@
 #include "TextDisplay.h"
 
-#include <game/player/PlayerInfo.h>
-
 #include <render/Colors.h>
 #include <render/infos/UIRenderInfo.h>
 #include <render/infos/proxy/UIInfos.h>
@@ -105,10 +103,10 @@ namespace ui
 		}
 	}
 
-	CallBackBindResult TextDisplay::runActiveBinds(PlayerInfo& playerInfo) {
-		auto result = Base::runActiveBinds(playerInfo);
+	CallBackBindResult TextDisplay::runActiveBinds(UIInfo& uiInfo, UserData& userData) {
+		auto result = Base::runActiveBinds(uiInfo, userData);
 		if (this->active) {
-			playerInfo.controlState.blockUserInput = true;
+			uiInfo.controlState.blockUserInput = true;
 		}
 		return result;
 	}
