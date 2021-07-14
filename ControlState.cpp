@@ -76,6 +76,19 @@ namespace ui
 		this->keyToControl[GLFW_KEY_X].push_back(CONTROL::KEY::X);
 		this->keyToControl[GLFW_KEY_Y].push_back(CONTROL::KEY::Y);
 		this->keyToControl[GLFW_KEY_Z].push_back(CONTROL::KEY::Z);
+
+		this->keyToControl[GLFW_KEY_F1].push_back(CONTROL::KEY::F1);
+		this->keyToControl[GLFW_KEY_F2].push_back(CONTROL::KEY::F2);
+		this->keyToControl[GLFW_KEY_F3].push_back(CONTROL::KEY::F3);
+		this->keyToControl[GLFW_KEY_F4].push_back(CONTROL::KEY::F4);
+		this->keyToControl[GLFW_KEY_F5].push_back(CONTROL::KEY::F5);
+		this->keyToControl[GLFW_KEY_F6].push_back(CONTROL::KEY::F6);
+		this->keyToControl[GLFW_KEY_F7].push_back(CONTROL::KEY::F7);
+		this->keyToControl[GLFW_KEY_F8].push_back(CONTROL::KEY::F8);
+		this->keyToControl[GLFW_KEY_F9].push_back(CONTROL::KEY::F9);
+		this->keyToControl[GLFW_KEY_F10].push_back(CONTROL::KEY::F10);
+		this->keyToControl[GLFW_KEY_F11].push_back(CONTROL::KEY::F11);
+		this->keyToControl[GLFW_KEY_F12].push_back(CONTROL::KEY::F12);
 	}
 
 	void ControlState::cycleStates() {
